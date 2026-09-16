@@ -8,8 +8,10 @@ class PinView extends GetView<PinController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.green.shade100,
+
       appBar: AppBar(
-        title: const Text("Manual Pin Generate"),
+        title: const Text("Milk Collector Pin Generate"),
         // leading: IconButton(
         //   icon: const Icon(Icons.arrow_back_ios),
         //   onPressed: () => Get.back(),
@@ -22,7 +24,7 @@ class PinView extends GetView<PinController> {
             end: Alignment.bottomCenter,
             colors: [
               Colors.green.shade700.withValues(alpha: 0.1),
-              Colors.white,
+              Colors.green.shade100,
             ],
           ),
         ),
@@ -90,19 +92,107 @@ class PinView extends GetView<PinController> {
                               }
                               return null;
                             },
+                            onChanged: controller.onCenterIdChanged,
                             textInputAction: TextInputAction.next,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 8),
+                          Obx(() {
+                            if (controller.centerNameLoading.value) {
+                              return Row(
+                                children: [
+                                  const SizedBox(
+                                    height: 14,
+                                    width: 14,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    "Fetching center name...",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                            if (controller.centerName.value.isNotEmpty) {
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.shade50,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: Colors.green.shade300,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.storefront_outlined,
+                                      size: 16,
+                                      color: Colors.green.shade700,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Flexible(
+                                      child: Text(
+                                        "Center: ${controller.centerName.value}",
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.green.shade800,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            if (controller.centerNameError.value.isNotEmpty) {
+                              return Row(
+                                children: [
+                                  Icon(
+                                    Icons.error_outline,
+                                    size: 16,
+                                    color: Colors.orange.shade800,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      controller.centerNameError.value,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.orange.shade800,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          }),
+                          const SizedBox(height: 8),
                           TextFormField(
                             controller: controller.pinController,
                             decoration: const InputDecoration(
                               labelText: "PIN",
                               prefixIcon: Icon(Icons.pin_outlined),
+                              counterText: "",
                             ),
                             keyboardType: TextInputType.number,
+                            maxLength: 4,
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
                                 return "Please enter PIN";
+                              }
+                              if (value.trim().length != 4) {
+                                return "PIN must be exactly 4 digits";
                               }
                               return null;
                             },
@@ -137,7 +227,7 @@ class PinView extends GetView<PinController> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 Obx(() {
                   if (controller.successMessage.value.isEmpty) {
                     return const SizedBox.shrink();
@@ -177,7 +267,7 @@ class PinView extends GetView<PinController> {
                     ),
                   );
                 }),
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
                 Obx(() {
                   if (controller.generatedPin.value.isEmpty) {
                     return const SizedBox.shrink();
@@ -190,31 +280,39 @@ class PinView extends GetView<PinController> {
                       side: BorderSide(color: Colors.green.shade300),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(14),
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.check_circle_outline,
-                            color: Colors.green.shade700,
-                            size: 48,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            "Generated PIN",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey.shade700,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
                           Text(
                             controller.generatedPin.value,
                             style: TextStyle(
-                              fontSize: 32,
+                              fontSize: 40,
                               fontWeight: FontWeight.bold,
                               color: Colors.green.shade800,
                               letterSpacing: 4,
                             ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.check_circle,
+                                color: Colors.green.shade700,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                "Generated PIN",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                            ],
                           ),
                         ],
                       ),
